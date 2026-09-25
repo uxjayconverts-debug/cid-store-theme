@@ -1,0 +1,119 @@
+{% comment %}
+  This section is used in the product template to render product page with
+  media, content, and add-to-cart form.
+
+  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
+{% endcomment %}
+
+<section class="product">
+
+  <div class="product__inner">
+
+    <div class="product__media">
+      <div class="product__main-image">
+        {% if product.featured_image %}
+          {{ product.featured_image | image_url: width: 800 | image_tag }}
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="product__info">
+
+      {% comment %} Product title and description {% endcomment %}
+      {% if product.title != blank or product.description != blank %}
+        <header class="product__header">
+          {% if product.title != blank %}
+            <h1 class="product__title">{{ product.title }}</h1>
+          {% endif %}
+          {% if product.description != blank %}
+            <div class="product__description">{{ product.description }}</div>
+          {% endif %}
+        </header>
+      {% endif %}
+
+      {% comment %} Product benefits {% endcomment %}
+      {% if section.blocks.size > 0 %}
+        <ul class="product__benefits">
+          {% for block in section.blocks %}
+            <li class="product__benefit" {{ block.shopify_attributes }}>{{ block.settings.text }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% comment %} Product form {% endcomment %}
+      <div class="product__form">
+        {% form 'product', product %}
+          {% assign current_variant = product.selected_or_first_available_variant %}
+          <div class="product__packs">
+            {% for variant in product.variants %}
+              <input
+                type="radio"
+                class="product__pack-input"
+                name="id"
+                value="{{ variant.id }}"
+                id="variant-{{ variant.id }}"
+                {% if variant == current_variant %}
+                  checked="checked"
+                {% endif %}
+              >
+              <label for="variant-{{ variant.id }}" class="product__pack-label">
+                <span class="product__pack-title">{{ variant.title }} </span>
+                <span class="product__pack-price">{{ variant.price | money }}</span>
+              </label>
+            {% endfor %}
+          </div>
+        {% endform %}
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<div class="product-form">
+  {% form 'product', product %}
+    {% assign current_variant = product.selected_or_first_available_variant %}
+
+    <select name="id">
+      {% for variant in product.variants %}
+        <option
+          value="{{ variant.id }}"
+          {% if variant == current_variant %}
+            selected="selected"
+          {% endif %}
+        >
+          {{ variant.title }} - {{ variant.price | money }}
+        </option>
+      {% endfor %}
+    </select>
+
+    <input type="text" name="quantity" min="1" value="1">
+
+    <input type="submit" value="Add to cart">
+    {{ form | payment_button }}
+  {% endform %}
+</div>
+
+{% schema %}
+{
+  "name": "t:general.product",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Benefit",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Benefit text",
+          "default": "Support mood & focus"
+        }
+      ]
+    }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  }
+}
+{% endschema %}
