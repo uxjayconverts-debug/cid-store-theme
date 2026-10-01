@@ -75,6 +75,7 @@
 
 </section>
 
+
 {% stylesheet %}
 
 .product__inner {
@@ -95,13 +96,51 @@
 .product__header {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  height: auto;
 }
 
 .product__title {
   font-size: 3rem;
   line-height: 100%;
+}
+
+.product__description {
+  font-size: 1rem;
+  line-height: 150%;
+}
+
+.product__benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+  line-height: 150%;
+  padding: 0;
+  margin: 0;
+}
+
+.product__form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.product__packs {
+  background-color: #f5f5f5;
+  display: flex;
+  gap: 1rem;
+}
+
+.product__pack-input {
+  display: none;
+}
+
+.product__pack-label {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  cursor: pointer;
+  border: 1px solid #121212;
+  border-radius: 1rem;
 }
 
 {% endstylesheet %}

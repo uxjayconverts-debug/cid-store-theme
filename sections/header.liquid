@@ -1,15 +1,15 @@
-<header>
-  <h2 class="header__title">
+<header class="site-header">
+  <h2 class="site-header__title">
     {{ shop.name | link_to: routes.root_url }}
   </h2>
 
-  <div class="header__menu">
+  <div class="site-header__menu">
     {% for link in section.settings.menu.links %}
       {{ link.title | link_to: link.url }}
     {% endfor %}
   </div>
 
-  <div class="header__icons">
+  <div class="site-header__icons">
     {% if shop.customer_accounts_enabled %}
       <shopify-account menu="{{ section.settings.customer_account_menu }}">
         {{ 'icon-account.svg' | inline_asset_content }}
@@ -27,13 +27,13 @@
 </header>
 
 {% stylesheet %}
-  header {
+  .site-header {
     height: 5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  header a {
+  .site-header a {
     position: relative;
     text-decoration: none;
     color: var(--color-foreground);
@@ -41,17 +41,17 @@
     align-items: center;
     justify-content: center;
   }
-  header a sup {
+  .site-header a sup {
     position: absolute;
     left: 100%;
     overflow: hidden;
     max-width: var(--page-margin);
   }
-  header svg {
+  .site-header svg {
     width: 2rem;
   }
-  header .header__menu,
-  header .header__icons {
+  .site-header .site-header__menu,
+  .site-header .site-header__icons {
     display: flex;
     gap: 1rem;
   }
