@@ -41,34 +41,57 @@
       {% endif %}
 
       {% comment %} Product form {% endcomment %}
-      <div class="product__form">
-        {% form 'product', product %}
-          {% assign current_variant = product.selected_or_first_available_variant %}
-          <div class="product__packs">
+      {% assign current_variant = product.selected_or_first_available_variant %}
+      {% form 'product', product, class: "product__form" %}
+
+        <fieldset class="product__packs">
+
+          <legend class="product__packs-legend">Pack size:</legend>
+
+          <div class="product__packs-grid">
+
             {% for variant in product.variants %}
+              {% assign savings = 0 %}
+              {% if variant.compare_at_price > variant.price %}
+                {% assign savings = variant.compare_at_price | minus: variant.price | times: 100 | divided_by: variant.compare_at_price | round %}
+              {% endif %}
+
               <input
-                type="radio"
-                class="product__pack-input"
-                name="id"
-                value="{{ variant.id }}"
-                id="variant-{{ variant.id }}"
-                {% if variant.id == current_variant.id %}
-                  checked="checked"
-                {% endif %}
+              type="radio"
+              class="product__pack-input"
+              name="id"
+              value="{{ variant.id }}"
+              id="variant-{{ variant.id }}"
+              {% if variant.id == current_variant.id %}checked{% endif %}
               >
               <label for="variant-{{ variant.id }}" class="product__pack-label">
-                <span class="product__pack-title">{{ variant.title }} </span>
-                <span class="product__pack-price">{{ variant.price | money }}</span>
+                <span class="product__pack-title">{{ variant.title }}</span>
+                <span class="product__pack-prices">
+                  <span class="product__pack-price">
+                    {{ variant.price | money_without_trailing_zeros }}
+                  </span>
+                  {% if variant.compare_at_price > variant.price %}
+                    <s class="product__pack-compare">
+                      {{ variant.compare_at_price | money_without_trailing_zeros }}
+                    </s>
+                  {% endif %}
+                </span>
+                {%  if savings > 0 %}
+                  <span class="product__pack-badge">save {{ savings }}%</span>
+                {% endif %}
               </label>
             {% endfor %}
+
           </div>
-          <input type="text" name="quantity" min="1" value="1" class="product__quantity-input">
-          <button type="submit" class="product__add-to-cart-button">
-            Add to cart - {{ current_variant.price | money }}
-          </button>
-          {{ form | payment_button }}
-        {% endform %}
-      </div>
+
+        </fieldset>
+
+        <button type="submit" class="product__add-to-cart-button">
+          Add to cart - {{ current_variant.price | money_without_trailing_zeros }}
+        </button>
+        
+      {% endform %}
+
     </div>
 
   </div>
@@ -125,22 +148,73 @@
 }
 
 .product__packs {
-  background-color: #f5f5f5;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.product__packs-legend {
+  padding: 0;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.product__packs-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 
 .product__pack-input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .product__pack-label {
+  position: relative;
   display: flex;
+  justify-content: space-between;
   flex-direction: column;
-  padding: 1rem;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 1rem 1.5rem;
   cursor: pointer;
   border: 1px solid #121212;
   border-radius: 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.product__pack-prices {
+  display: flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.product__pack-badge {
+  position: absolute;
+  bottom: -0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.125rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #ff3eb5;
+  color: #121212;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.product__pack-input:checked + .product__pack-label {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.product__pack-input:focus-visible + .product__pack-label {
+  outline: 2px solid #121212;
+  outline-offset: 2px;
 }
 
 {% endstylesheet %}
